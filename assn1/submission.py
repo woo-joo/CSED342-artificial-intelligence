@@ -125,7 +125,7 @@ def sparseVectorDotProduct(v1, v2):
     This function will be useful later for linear classifiers.
     """
     # BEGIN_YOUR_ANSWER (our solution is 3 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    return sum(v1[k] * v2[k] for k in v1)
     # END_YOUR_ANSWER
 
 ############################################################
