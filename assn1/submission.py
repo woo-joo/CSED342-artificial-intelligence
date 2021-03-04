@@ -61,7 +61,7 @@ def manhattanDistance(loc1, loc2):
     You can exploit sum, abs, zip functions and a generator to implement it as one line code!
     """
     # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    return sum(abs(comp1 - comp2) for comp1, comp2 in zip(loc1, loc2))
     # END_YOUR_ANSWER
 
 ############################################################
