@@ -9,7 +9,7 @@ def problem_1a():
     return a number between 0 and 1
     """
     # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    return 0.4
     # END_YOUR_ANSWER
 
 def problem_1b():
@@ -17,7 +17,7 @@ def problem_1b():
     return one of [1, 2, 3, 4]
     """
     # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    return 4
     # END_YOUR_ANSWER
 
 ############################################################
