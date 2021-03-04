@@ -137,7 +137,8 @@ def incrementSparseVector(v1, scale, v2):
     This function will be useful later for linear classifiers.
     """
     # BEGIN_YOUR_ANSWER (our solution is 2 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    for k in v2:
+        v1[k] += scale * v2[k]
     # END_YOUR_ANSWER
 
 ############################################################
