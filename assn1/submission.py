@@ -93,7 +93,25 @@ def countMutatedSentences(sentence):
     - You should apply dynamic programming for efficiency.
     """
     # BEGIN_YOUR_ANSWER (our solution is 17 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    words = sentence.split()
+
+    suffixes, prefixes = [], collections.defaultdict(set)
+    for word in words:
+        if not word in suffixes:
+            suffixes.append(word)
+            for i in range(len(words) - 1):
+                if words[i + 1] == word:
+                    prefixes[word].add(words[i])
+
+    counts = [collections.defaultdict(int) for i in range(len(words) - 1)]
+    for suffix in suffixes:
+        counts[0][suffix] = len(prefixes[suffix])
+    for i in range(1, len(words) - 1):
+        for suffix in suffixes:
+            for prefix in prefixes[suffix]:
+                counts[i][suffix] += counts[i - 1][prefix]
+    
+    return sum(counts[-1].values())
     # END_YOUR_ANSWER
 
 ############################################################
