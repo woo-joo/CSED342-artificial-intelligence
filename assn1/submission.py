@@ -30,7 +30,7 @@ def getWordKey(word):
     between tuples and between strings compute outputs.
     """
     # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    return (len(word), word)
     # END_YOUR_ANSWER
 
 def computeMaxWordLength(text):
