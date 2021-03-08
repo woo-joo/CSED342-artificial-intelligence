@@ -152,5 +152,10 @@ def computeMostFrequentWord(text):
     You might find it useful to use collections.defaultdict(int).
     """
     # BEGIN_YOUR_ANSWER (our solution is 6 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    freqs = collections.defaultdict(int)
+    for word in text.split():
+        freqs[word] += 1
+    maxfreq = max(freqs.values())
+    maxkeys = set(key for key in freqs if freqs[key] == maxfreq)
+    return (maxkeys, maxfreq)
     # END_YOUR_ANSWER
