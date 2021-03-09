@@ -95,19 +95,15 @@ def countMutatedSentences(sentence):
     # BEGIN_YOUR_ANSWER (our solution is 17 lines of code, but don't worry if you deviate from this)
     words = sentence.split()
 
-    suffixes, prefixes = [], collections.defaultdict(set)
+    prefixes = collections.defaultdict(set)
     for word in words:
-        if not word in suffixes:
-            suffixes.append(word)
-            for i in range(len(words) - 1):
-                if words[i + 1] == word:
-                    prefixes[word].add(words[i])
+        prefixes[word] = set(words[i] for i in range(len(words) - 1) if words[i + 1] == word)
 
     counts = [collections.defaultdict(int) for i in range(len(words) - 1)]
-    for suffix in suffixes:
+    for suffix in prefixes:
         counts[0][suffix] = len(prefixes[suffix])
     for i in range(1, len(words) - 1):
-        for suffix in suffixes:
+        for suffix in prefixes:
             for prefix in prefixes[suffix]:
                 counts[i][suffix] += counts[i - 1][prefix]
     
