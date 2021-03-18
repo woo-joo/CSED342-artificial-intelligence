@@ -87,7 +87,10 @@ def extractBigramFeatures(x):
     {('am', 'what'): 1, 'what': 1, ('I', 'am'): 2, 'I': 2, ('what', 'I'): 1, 'am': 2, ('<s>', 'I'): 1, ('am', '</s>'): 1}
     """
     # BEGIN_YOUR_ANSWER (our solution is 5 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    words = x.split()
+    pairs = [('<s>', words[0])] + list(zip(words[:-1], words[1:])) + [(words[-1], '</s>')]
+    phi = Counter(pairs)
+    phi.update(extractWordFeatures(x))
     # END_YOUR_ANSWER
     return phi
 
