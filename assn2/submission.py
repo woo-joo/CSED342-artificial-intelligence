@@ -65,7 +65,13 @@ def learnPredictor(trainExamples, testExamples, featureExtractor, numIters, eta)
         return 1 / (1 + math.exp(-n))
 
     # BEGIN_YOUR_ANSWER (our solution is 14 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    for _ in range(numIters):
+        for x, y in trainExamples:
+            phi = featureExtractor(x)
+            sigma = sigmoid(dotProduct(weights, phi))
+            prob = sigma if y == 1 else (1 - sigma)
+            scale = (eta * y * sigma * (1 - sigma)) / prob
+            increment(weights, scale, phi)
     # END_YOUR_ANSWER
     return weights
 
