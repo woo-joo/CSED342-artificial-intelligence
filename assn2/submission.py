@@ -37,7 +37,7 @@ def extractWordFeatures(x):
     Example: "I am what I am" --> {'I': 2, 'am': 2, 'what': 1}
     """
     # BEGIN_YOUR_ANSWER (our solution is 6 lines of code, but don't worry if you deviate from this)
-    return Counter(x.split())
+    return dict(Counter(x.split()))
     # END_YOUR_ANSWER
 
 ############################################################
@@ -89,7 +89,7 @@ def extractBigramFeatures(x):
     # BEGIN_YOUR_ANSWER (our solution is 5 lines of code, but don't worry if you deviate from this)
     words = x.split()
     pairs = [('<s>', words[0])] + list(zip(words[:-1], words[1:])) + [(words[-1], '</s>')]
-    phi = Counter(pairs)
+    phi = dict(Counter(pairs))
     phi.update(extractWordFeatures(x))
     # END_YOUR_ANSWER
     return phi
@@ -132,6 +132,39 @@ def kmeans(examples, K, maxIters):
             final reconstruction loss)
     '''
     # BEGIN_YOUR_ANSWER (our solution is 40 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    examples_squared = [dotProduct(example, example) for example in examples]
+    def distance(idx_c, idx_e):
+        return centroids_squared[idx_c] - 2 * dotProduct(centroids[idx_c], examples[idx_e]) + examples_squared[idx_e]
+
+    # initialize centroids
+    centroids = random.sample(examples, K)
+    centroids_squared = [dotProduct(centroid, centroid) for centroid in centroids]
+    
+    assignments = []
+    for _ in range(maxIters):
+        # assign each example to best cluster
+        _assignments = []
+        for i in range(len(examples)):
+            distances = {j: distance(j, i) for j in range(K)}
+            assignment = min(distances, key=distances.get)
+            _assignments.append(assignment)
+        if _assignments == assignments:
+            break
+        assignments = _assignments
+
+        # update centroids
+        means = [[{}, 0] for _ in range(K)]
+        for i in range(len(examples)):
+            increment(means[assignments[i]][0], 1, examples[i])
+            means[assignments[i]][1] += 1
+        for i, (mean, size) in enumerate(means):
+            if size > 0:
+                for k, v in list(mean.items()):
+                    mean[k] = v / size
+            centroids[i] = mean
+            centroids_squared[i] = dotProduct(mean, mean)
+    
+    loss = sum(distance(assignments[i], i) for i in range(len(examples)))
+    return (centroids, assignments, loss)
     # END_YOUR_ANSWER
 
