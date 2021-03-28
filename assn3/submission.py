@@ -13,20 +13,20 @@ class SegmentationProblem(util.SearchProblem):
 
     def startState(self):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        return self.query
+        return 0
         # END_YOUR_ANSWER
 
     def isEnd(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        return state == ''
+        return state == len(self.query)
         # END_YOUR_ANSWER
 
     def succAndCost(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 5 lines of code, but don't worry if you deviate from this)
         results = []
-        for i in range(1, len(state) + 1):
-            action, succ = state[:i], state[i:]
-            results.append((action, succ, self.unigramCost(action)))
+        for i in range(state + 1, len(self.query) + 1):
+            action = self.query[state:i]
+            results.append((action, i, self.unigramCost(action)))
         return results
         # END_YOUR_ANSWER
 
@@ -52,22 +52,22 @@ class VowelInsertionProblem(util.SearchProblem):
 
     def startState(self):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        return wordsegUtil.SENTENCE_BEGIN, len(self.queryWords)
+        return wordsegUtil.SENTENCE_BEGIN, 0
         # END_YOUR_ANSWER
 
     def isEnd(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        return state[1] == 0
+        return state[1] == len(self.queryWords)
         # END_YOUR_ANSWER
 
     def succAndCost(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 9 lines of code, but don't worry if you deviate from this)
-        prev_word, length = state
+        prev_word, count = state
         results = []
-        _actions = self.possibleFills(self.queryWords[-length])
-        actions = _actions if len(_actions) > 0 else {self.queryWords[-length]}
+        _actions = self.possibleFills(self.queryWords[count])
+        actions = _actions if len(_actions) > 0 else {self.queryWords[count]}
         for action in actions:
-            results.append((action, (action, length - 1), self.bigramCost(prev_word, action)))
+            results.append((action, (action, count + 1), self.bigramCost(prev_word, action)))
         return results
         # END_YOUR_ANSWER
 
