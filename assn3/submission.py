@@ -52,22 +52,30 @@ class VowelInsertionProblem(util.SearchProblem):
 
     def startState(self):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        return wordsegUtil.SENTENCE_BEGIN, len(self.queryWords)
         # END_YOUR_ANSWER
 
     def isEnd(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        return state[1] == 0
         # END_YOUR_ANSWER
 
     def succAndCost(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 9 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        prev_word, length = state
+        results = []
+        _actions = self.possibleFills(self.queryWords[-length])
+        actions = _actions if len(_actions) > 0 else {self.queryWords[-length]}
+        for action in actions:
+            results.append((action, (action, length - 1), self.bigramCost(prev_word, action)))
+        return results
         # END_YOUR_ANSWER
 
 def insertVowels(queryWords, bigramCost, possibleFills):
     # BEGIN_YOUR_ANSWER (our solution is 3 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    ucs = util.UniformCostSearch(verbose=0)
+    ucs.solve(VowelInsertionProblem(queryWords, bigramCost, possibleFills))
+    return ' '.join(ucs.actions)
     # END_YOUR_ANSWER
 
 ############################################################
