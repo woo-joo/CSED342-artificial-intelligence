@@ -125,28 +125,32 @@ def segmentAndInsert(query, bigramCost, possibleFills):
 class SimpleProblem(util.SearchProblem):
     def __init__(self):
         # BEGIN_YOUR_ANSWER (our solution is 4 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        self.actions = {'a': [('b', 'b', 1), ('c', 'c', 1)],
+                        'b': [('d', 'd', 1)],
+                        'c': [('d', 'd', 2)],
+                        'd': [('e', 'e', 1000)]}
         # END_YOUR_ANSWER
 
     def startState(self):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        return 'a'
         # END_YOUR_ANSWER
 
     def isEnd(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        return state == 'e'
         # END_YOUR_ANSWER
 
     def succAndCost(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 3 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        return self.actions[state]
         # END_YOUR_ANSWER
 
 
 def admissibleButInconsistentHeuristic(state):
     # BEGIN_YOUR_ANSWER (our solution is 2 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    h_costs = {'a': 0, 'b': 1001, 'c': 0, 'd': 0, 'e': 0}
+    return h_costs[state]
     # END_YOUR_ANSWER
 
 # Problem 4b: Apply a heuristic function to the joint segmentation-and-insertion problem
@@ -158,7 +162,15 @@ def makeWordCost(bigramCost, wordPairs):
     :returns: wordCost, which is a function from word to cost
     """
     # BEGIN_YOUR_ANSWER (our solution is 12 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    costs = {}
+    for word1, word2 in wordPairs:
+        cost = bigramCost(word1, word2)
+        costs[word2] = min(cost ,costs.get(word2, cost))
+
+    def wordCost(word):
+        return costs.get(word, bigramCost(wordsegUtil.SENTENCE_UNK, word))
+
+    return wordCost
     # END_YOUR_ANSWER
 
 class RelaxedProblem(util.SearchProblem):
@@ -169,22 +181,32 @@ class RelaxedProblem(util.SearchProblem):
 
     def startState(self):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        return None, 0
         # END_YOUR_ANSWER
 
     def isEnd(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 1 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        return state[1] == len(self.query)
         # END_YOUR_ANSWER
 
     def succAndCost(self, state):
         # BEGIN_YOUR_ANSWER (our solution is 5 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        results = []
+        for i in range(state[1] + 1, len(self.query) + 1):
+            for action in self.possibleFills(self.query[state[1]:i]):
+                results.append((None, (None, i), self.wordCost(action)))
+        return results
         # END_YOUR_ANSWER
 
 def makeHeuristic(query, wordCost, possibleFills):
     # BEGIN_YOUR_ANSWER (our solution is 7 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    dp = util.DynamicProgramming(RelaxedProblem(query, wordCost, possibleFills))
+
+    h = [dp((None, i)) for i in range(len(query) + 1)]
+    def heuristic(state):
+        return h[state[1]]
+
+    return heuristic
     # END_YOUR_ANSWER
 
 def fastSegmentAndInsert(query, bigramCost, wordCost, possibleFills):
@@ -192,7 +214,10 @@ def fastSegmentAndInsert(query, bigramCost, wordCost, possibleFills):
         return ''
 
     # BEGIN_YOUR_ANSWER (our solution is 4 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    ucs = util.UniformCostSearch(verbose=0)
+    heuristic = makeHeuristic(query, wordCost, possibleFills)
+    ucs.solve(JointSegmentationInsertionProblem(query, bigramCost, possibleFills), heuristic)
+    return ' '.join(ucs.actions)
     # END_YOUR_ANSWER
 
 ############################################################
