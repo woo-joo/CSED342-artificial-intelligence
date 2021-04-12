@@ -44,7 +44,40 @@ class BlackjackMDP(util.MDP):
     # in the list returned by succAndProbReward.
     def succAndProbReward(self, state, action):
         # BEGIN_YOUR_ANSWER (our solution is 44 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        total, nextIndex, counts = state
+
+        if counts is None:
+            return []
+        
+        results = []
+        sumCounts = sum(counts)
+
+        if action == 'Take':
+            if nextIndex is None:
+                for i, count in enumerate(counts):
+                    if count > 0:
+                        newTotal = total + self.cardValues[i]
+                        newCounts = counts[:i] + (count - 1,) + counts[i+1:] if sumCounts > 1 else None
+                        reward = newTotal if newCounts is None else 0
+                        results.append(((newTotal, None, newCounts if newTotal <= self.threshold else None), \
+                                       count / sumCounts, reward if newTotal <= self.threshold else 0))
+            else:
+                newTotal = total + self.cardValues[nextIndex]
+                newCounts = counts[:nextIndex] + (counts[nextIndex] - 1,) + counts[nextIndex+1:] if sumCounts > 1 else None
+                reward = newTotal if newCounts is None else 0
+                results = [((newTotal, None, newCounts if newTotal <= self.threshold else None), \
+                           1, reward if newTotal <= self.threshold else 0)]
+        
+        elif action == 'Peek':
+            if nextIndex is None:
+                results = [((total, i, counts), count / sumCounts, -self.peekCost) for i, count in enumerate(counts) if count > 0]
+            else:
+                results = [(state, 1, -self.peekCost)]
+        
+        else:
+            results = [((total, None, None), 1, total)]
+        
+        return results
         # END_YOUR_ANSWER
 
     def discount(self):
