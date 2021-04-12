@@ -48,6 +48,8 @@ class BlackjackMDP(util.MDP):
 
         if counts is None:
             return []
+        if action == 'Peek' and nextIndex is not None:
+            return []
         
         results = []
         sumCounts = sum(counts)
@@ -69,10 +71,7 @@ class BlackjackMDP(util.MDP):
                            1, reward if newTotal <= self.threshold else 0)]
         
         elif action == 'Peek':
-            if nextIndex is None:
-                results = [((total, i, counts), count / sumCounts, -self.peekCost) for i, count in enumerate(counts) if count > 0]
-            else:
-                results = [(state, 1, -self.peekCost)]
+            results = [((total, i, counts), count / sumCounts, -self.peekCost) for i, count in enumerate(counts) if count > 0]
         
         else:
             results = [((total, None, None), 1, total)]
@@ -94,7 +93,18 @@ class ValueIterationDP(ValueIteration):
         V = {}  # state -> value of state
 
         # BEGIN_YOUR_ANSWER (our solution is 13 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        def DP(state):
+            if state not in V:
+                if mdp.isEnd(state):
+                    V[state] = 0
+                else:
+                    V[state] = max(sum(prob * (reward + mdp.discount() * DP(newState)) \
+                                       for newState, prob, reward in mdp.succAndProbReward(state, action))
+                                   for action in mdp.actions(state))
+            return V[state]
+        
+        for state in mdp.states:
+            DP(state)
         # END_YOUR_ANSWER
 
         # Compute the optimal policy now
