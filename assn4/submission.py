@@ -44,18 +44,18 @@ class BlackjackMDP(util.MDP):
     # in the list returned by succAndProbReward.
     def succAndProbReward(self, state, action):
         # BEGIN_YOUR_ANSWER (our solution is 44 lines of code, but don't worry if you deviate from this)
-        total, nextIndex, counts = state
+        total, nextCard, counts = state
 
         if counts is None:
             return []
-        if action == 'Peek' and nextIndex is not None:
+        if action == 'Peek' and nextCard is not None:
             return []
         
         results = []
         sumCounts = sum(counts)
 
         if action == 'Take':
-            if nextIndex is None:
+            if nextCard is None:
                 for i, count in enumerate(counts):
                     if count > 0:
                         newTotal = total + self.cardValues[i]
@@ -64,8 +64,8 @@ class BlackjackMDP(util.MDP):
                         results.append(((newTotal, None, newCounts if newTotal <= self.threshold else None), \
                                        count / sumCounts, reward if newTotal <= self.threshold else 0))
             else:
-                newTotal = total + self.cardValues[nextIndex]
-                newCounts = counts[:nextIndex] + (counts[nextIndex] - 1,) + counts[nextIndex+1:] if sumCounts > 1 else None
+                newTotal = total + self.cardValues[nextCard]
+                newCounts = counts[:nextCard] + (counts[nextCard] - 1,) + counts[nextCard+1:] if sumCounts > 1 else None
                 reward = newTotal if newCounts is None else 0
                 results = [((newTotal, None, newCounts if newTotal <= self.threshold else None), \
                            1, reward if newTotal <= self.threshold else 0)]
@@ -164,12 +164,13 @@ class Qlearning(util.RLAlgorithm):
             return
 
         # BEGIN_YOUR_ANSWER (our solution is 8 lines of code, but don't worry if you deviate from this)
+        Q_opt = self.getQ(state, action)
         if isLast(newState): V_opt = 0
         else: V_opt = max(self.getQ(newState, action) for action in self.actions(newState))
         eta = self.getStepSize()
 
         for f, v in self.featureExtractor(state, action):
-            self.weights[f] -= eta * (self.getQ(state, action) - (reward + self.discount * V_opt)) * v
+            self.weights[f] -= eta * (Q_opt - (reward + self.discount * V_opt)) * v
         # END_YOUR_ANSWER
 
 
@@ -192,9 +193,12 @@ class SARSA(Qlearning):
             return
 
         # BEGIN_YOUR_ANSWER (our solution is 8 lines of code, but don't worry if you deviate from this)
+        Q_pi = self.getQ(state, action)
+        nextQ_pi = self.getQ(newState, newAction)
         eta = self.getStepSize()
+        
         for f, v in self.featureExtractor(state, action):
-            self.weights[f] -= eta * (self.getQ(state, action) - (reward + self.discount * self.getQ(newState, newAction))) * v
+            self.weights[f] -= eta * (Q_pi - (reward + self.discount * nextQ_pi)) * v
         # END_YOUR_ANSWER
 
 # Return a singleton list containing indicator feature for the (state, action)
@@ -218,5 +222,11 @@ def identityFeatureExtractor(state, action):
 def blackjackFeatureExtractor(state, action):
     total, nextCard, counts = state
     # BEGIN_YOUR_ANSWER (our solution is 8 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    featureValue = 1
+    features = [((total, action), featureValue)]
+    if counts is not None:
+        features.append(((tuple(int(count > 0) for count in counts), action), featureValue))
+        for i, count in enumerate(counts):
+            features.append(((i, count, action), featureValue))
+    return features
     # END_YOUR_ANSWER
