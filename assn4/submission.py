@@ -192,7 +192,9 @@ class SARSA(Qlearning):
             return
 
         # BEGIN_YOUR_ANSWER (our solution is 8 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        eta = self.getStepSize()
+        for f, v in self.featureExtractor(state, action):
+            self.weights[f] -= eta * (self.getQ(state, action) - (reward + self.discount * self.getQ(newState, newAction))) * v
         # END_YOUR_ANSWER
 
 # Return a singleton list containing indicator feature for the (state, action)
