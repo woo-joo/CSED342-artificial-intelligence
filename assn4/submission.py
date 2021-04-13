@@ -164,7 +164,12 @@ class Qlearning(util.RLAlgorithm):
             return
 
         # BEGIN_YOUR_ANSWER (our solution is 8 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        if isLast(newState): V_opt = 0
+        else: V_opt = max(self.getQ(newState, action) for action in self.actions(newState))
+        eta = self.getStepSize()
+
+        for f, v in self.featureExtractor(state, action):
+            self.weights[f] -= eta * (self.getQ(state, action) - (reward + self.discount * V_opt)) * v
         # END_YOUR_ANSWER
 
 
