@@ -16,7 +16,7 @@ def create_chain_csp(n):
     for i, var in enumerate(variables):
         csp.add_variable(var, domain)
         if i == 0: continue
-        csp.add_binary_factor(variables[i - 1], var, lambda x, y : x ^ y)
+        csp.add_binary_factor(variables[i - 1], var, lambda x, y: x ^ y)
     # END_YOUR_ANSWER
     return csp
 
@@ -45,8 +45,8 @@ def create_nqueens_csp(n = 8):
     for i in range(1, n + 1):
         for j in range(1, n + 1):
             if i == j: continue
-            csp.add_binary_factor(('X', i), ('X', j), lambda x, y : x != y)
-            csp.add_binary_factor(('X', i), ('X', j), lambda x, y : abs(i - j) != abs(x - y))
+            csp.add_binary_factor(('X', i), ('X', j), lambda x, y: x != y)
+            csp.add_binary_factor(('X', i), ('X', j), lambda x, y: abs(i - j) != abs(x - y))
     # END_YOUR_ANSWER
     return csp
 
@@ -277,7 +277,22 @@ class BacktrackingSearch():
         #   (self.csp.binaryFactors[var1][var2] returns a nested dict of all assignments)
 
         # BEGIN_YOUR_ANSWER (our solution is 19 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        queue = [var]
+        while len(queue) > 0:
+            var1 = queue.pop(0)
+            if self.csp.unaryFactors[var1]:
+                self.domains[var1] = [val for val in self.domains[var1] if self.csp.unaryFactors[var1][val] > 0]
+            for var2 in self.csp.get_neighbor_vars(var1):
+                factor = self.csp.binaryFactors[var1][var2]
+                if factor:
+                    new_domain = []
+                    for val2 in self.domains[var2]:
+                        if len([val1 for val1 in self.domains[var1] if factor[val1][val2] > 0]) > 0:
+                            new_domain.append(val2)
+                    if new_domain != self.domains[var2]:
+                        self.domains[var2] = new_domain
+                        if var2 not in queue:
+                            queue.append(var2)
         # END_YOUR_ANSWER
 
 
