@@ -201,7 +201,40 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
 
     # BEGIN_YOUR_ANSWER (our solution is 42 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    def V(state, agent, depth, alpha, beta):
+      actions = state.getLegalActions(agent)
+
+      if state.isWin() or state.isLose() or actions == [Directions.STOP]:
+        return state.getScore(), Directions.STOP
+      
+      if depth == 0:
+        return self.evaluationFunction(state), Directions.STOP
+      
+      if agent < state.getNumAgents() - 1:
+        newAgent = agent + 1
+        newDepth = depth
+      else:
+        newAgent = 0
+        newDepth = depth - 1
+
+      if agent == self.index:
+        maxV = float("-inf"), Directions.STOP
+        for action in actions:
+          if action == Directions.STOP: continue
+          maxV = max(maxV, (V(state.generatePacmanSuccessor(action), newAgent, newDepth, alpha, beta)[0], action))
+          alpha = max(alpha, maxV[0])
+          if beta < alpha: break
+        return maxV
+      else:
+        minV = float("inf"), Directions.STOP
+        for action in actions:
+          if action == Directions.STOP: continue
+          minV = min(minV, (V(state.generateSuccessor(agent, action), newAgent, newDepth, alpha, beta)[0], action))
+          beta = min(beta, minV[0])
+          if beta < alpha: break
+        return minV
+
+    return V(gameState, self.index, self.depth, float("-inf"), float("inf"))[1]
     # END_YOUR_ANSWER
 
 ######################################################################################
