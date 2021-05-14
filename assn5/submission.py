@@ -254,7 +254,29 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     """
 
     # BEGIN_YOUR_ANSWER (our solution is 30 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    def V(state, agent, depth):
+      actions = state.getLegalActions(agent)
+
+      if state.isWin() or state.isLose() or actions == [Directions.STOP]:
+        return state.getScore(), Directions.STOP
+      
+      if depth == 0:
+        return self.evaluationFunction(state), Directions.STOP
+      
+      if agent < state.getNumAgents() - 1:
+        newAgent = agent + 1
+        newDepth = depth
+      else:
+        newAgent = 0
+        newDepth = depth - 1
+
+      if agent == self.index:
+        return max((V(state.generateSuccessor(agent, action), newAgent, newDepth)[0], action)
+                   for action in actions if action != Directions.STOP)
+      else:
+        return sum(V(state.generateSuccessor(agent, action), newAgent, newDepth)[0] / len(actions) for action in actions), None
+
+    return V(gameState, self.index, self.depth)[1]
     # END_YOUR_ANSWER
 
 ######################################################################################
