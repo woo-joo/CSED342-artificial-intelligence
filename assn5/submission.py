@@ -165,7 +165,26 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
 
     # BEGIN_YOUR_ANSWER (our solution is 30 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    def V(state, agent, depth):
+      actions = state.getLegalActions(agent)
+
+      if state.isWin() or state.isLose() or actions == [Directions.STOP]:
+        return state.getScore(), Directions.STOP
+      
+      if depth == 0:
+        return self.evaluationFunction(state), Directions.STOP
+      
+      Vs = [(V(state.generateSuccessor(agent, action),
+               agent + 1 if agent < state.getNumAgents() - 1 else 0,
+               depth if agent < state.getNumAgents() - 1 else depth - 1)[0], action)
+            for action in actions if action != Directions.STOP]
+      
+      if agent == self.index:
+        return max(Vs)
+      else:
+        return min(Vs)
+
+    return V(gameState, self.index, self.depth)[1]
     # END_YOUR_ANSWER
 
 ######################################################################################
