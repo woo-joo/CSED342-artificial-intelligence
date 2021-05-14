@@ -282,6 +282,7 @@ class BacktrackingSearch():
             var1 = queue.pop(0)
             if self.csp.unaryFactors[var1]:
                 self.domains[var1] = [val for val in self.domains[var1] if self.csp.unaryFactors[var1][val] > 0]
+            
             for var2 in self.csp.get_neighbor_vars(var1):
                 factor = self.csp.binaryFactors[var1][var2]
                 if factor:
@@ -289,6 +290,7 @@ class BacktrackingSearch():
                     for val2 in self.domains[var2]:
                         if len([val1 for val1 in self.domains[var1] if factor[val1][val2] > 0]) > 0:
                             new_domain.append(val2)
+                            
                     if new_domain != self.domains[var2]:
                         self.domains[var2] = new_domain
                         if var2 not in queue:
@@ -320,7 +322,26 @@ def get_sum_variable(csp, name, variables, maxSum):
         iff the assignment of |variables| sums to |n|.
     """
     # BEGIN_YOUR_ANSWER (our solution is 28 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    result = ('sum', name, 'aggregated')
+    csp.add_variable(result, list(range(0, maxSum + 1)))
+
+    if len(variables) == 0:
+        csp.add_unary_factor(result, lambda val: val == 0)
+        return result
+
+    for i, X_i in enumerate(variables):
+        A_i = ('sum', name, i)
+        csp.add_variable(A_i, [(x, y) for x in range(0, maxSum + 1) for y in range(0, maxSum + 1)])
+
+        csp.add_binary_factor(X_i, A_i, lambda val, b: b[1] == b[0] + val)
+
+        if i == 0:
+            csp.add_unary_factor(A_i, lambda b: b[0] == 0)
+        else:
+            csp.add_binary_factor(('sum', name, i - 1), A_i, lambda b1, b2: b1[1] == b2[0])
+
+    csp.add_binary_factor(A_i, result, lambda b, res: res == b[1])
+    return result
     # END_YOUR_ANSWER
 
 def create_lightbulb_csp(buttonSets, numButtons):
