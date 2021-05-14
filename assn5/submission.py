@@ -288,7 +288,42 @@ def betterEvaluationFunction(currentGameState):
   """
 
   # BEGIN_YOUR_ANSWER (our solution is 60 lines of code, but don't worry if you deviate from this)
-  raise NotImplementedError  # remove this line before writing code
+  currentPacmanPosition = currentGameState.getPacmanPosition()
+  features, weights = [], []
+
+  # default score
+  features.append(currentGameState.getScore())
+  weights.append(1)
+
+  # manhattan distance to the closest ghost
+  distToGhosts, distToScaredGhosts = [], []
+  for ghost in currentGameState.getGhostStates():
+    if ghost.scaredTimer == 0:
+      distToGhosts.append(manhattanDistance(currentPacmanPosition, ghost.getPosition()))
+    else:
+      distToScaredGhosts.append(ghost.scaredTimer / manhattanDistance(currentPacmanPosition, ghost.getPosition()))
+  features.append(min(distToGhosts) if len(distToGhosts) > 0 else 0)
+  weights.append(1)
+  features.append(min(distToScaredGhosts) if len(distToScaredGhosts) > 0 else 0)
+  weights.append(15)
+
+  # number of foods
+  numFood = currentGameState.getNumFood()
+  features.append(numFood)
+  weights.append(-0.1)
+
+  # manhattan distance to the closest food
+  distToFoods = [manhattanDistance(currentPacmanPosition, foodPosition) for foodPosition in currentGameState.getFood().asList()]
+  features.append((1 / min(distToFoods)) if len(distToFoods) > 0 else 0)
+  weights.append(1 / (numFood ** 2))
+
+  # manhattan distance to the closest capsule
+  distToCapsules = [1 / manhattanDistance(currentPacmanPosition, capsulePosition) for capsulePosition in currentGameState.getCapsules()]
+  features.append(min(distToCapsules) if len(distToCapsules) > 0 else 0)
+  weights.append(5 if len(distToScaredGhosts) == 0 else 0)
+
+  # score
+  return sum(feature * weight for feature, weight in zip(features, weights))
   # END_YOUR_ANSWER
 
 # Abbreviation
