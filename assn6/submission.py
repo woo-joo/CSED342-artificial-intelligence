@@ -15,7 +15,8 @@ def create_chain_csp(n):
     # BEGIN_YOUR_ANSWER (our solution is 4 lines of code, but don't worry if you deviate from this)
     for i, var in enumerate(variables):
         csp.add_variable(var, domain)
-        if i > 0: csp.add_binary_factor(variables[i - 1], var, lambda x, y : x ^ y)
+        if i == 0: continue
+        csp.add_binary_factor(variables[i - 1], var, lambda x, y : x ^ y)
     # END_YOUR_ANSWER
     return csp
 
@@ -36,7 +37,16 @@ def create_nqueens_csp(n = 8):
     csp = util.CSP()
     # Problem 1a
     # BEGIN_YOUR_ANSWER (our solution is 13 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    domain = list(range(1, n + 1))
+
+    for i in range(1, n + 1):
+        csp.add_variable(('X', i), domain)
+    
+    for i in range(1, n + 1):
+        for j in range(1, n + 1):
+            if i == j: continue
+            csp.add_binary_factor(('X', i), ('X', j), lambda x, y : x != y)
+            csp.add_binary_factor(('X', i), ('X', j), lambda x, y : abs(i - j) != abs(x - y))
     # END_YOUR_ANSWER
     return csp
 
