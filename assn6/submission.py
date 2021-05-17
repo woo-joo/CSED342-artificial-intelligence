@@ -39,11 +39,11 @@ def create_nqueens_csp(n = 8):
     # BEGIN_YOUR_ANSWER (our solution is 13 lines of code, but don't worry if you deviate from this)
     domain = list(range(1, n + 1))
 
-    for i in range(1, n + 1):
+    for i in domain:
         csp.add_variable(('X', i), domain)
     
-    for i in range(1, n + 1):
-        for j in range(1, n + 1):
+    for i in domain:
+        for j in domain:
             if i == j: continue
             csp.add_binary_factor(('X', i), ('X', j), lambda x, y: x != y)
             csp.add_binary_factor(('X', i), ('X', j), lambda x, y: abs(i - j) != abs(x - y))
