@@ -326,7 +326,8 @@ def get_sum_variable(csp, name, variables, maxSum):
     """
     # BEGIN_YOUR_ANSWER (our solution is 28 lines of code, but don't worry if you deviate from this)
     result = ('sum', name, 'aggregated')
-    csp.add_variable(result, list(range(0, maxSum + 1)))
+    domain = list(range(maxSum + 1))
+    csp.add_variable(result, domain)
 
     if len(variables) == 0:
         csp.add_unary_factor(result, lambda val: val == 0)
@@ -334,14 +335,12 @@ def get_sum_variable(csp, name, variables, maxSum):
 
     for i, X_i in enumerate(variables):
         A_i = ('sum', name, i)
-        csp.add_variable(A_i, [(x, y) for x in range(0, maxSum + 1) for y in range(0, maxSum + 1)])
+        csp.add_variable(A_i, [(x, y) for x in domain for y in domain])
 
         csp.add_binary_factor(X_i, A_i, lambda val, b: b[1] == b[0] + val)
 
-        if i == 0:
-            csp.add_unary_factor(A_i, lambda b: b[0] == 0)
-        else:
-            csp.add_binary_factor(('sum', name, i - 1), A_i, lambda b1, b2: b1[1] == b2[0])
+        if i == 0: csp.add_unary_factor(A_i, lambda b: b[0] == 0)
+        else: csp.add_binary_factor(('sum', name, i - 1), A_i, lambda b1, b2: b1[1] == b2[0])
 
     csp.add_binary_factor(A_i, result, lambda b, res: res == b[1])
     return result
