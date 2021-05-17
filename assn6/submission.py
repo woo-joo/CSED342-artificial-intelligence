@@ -278,23 +278,26 @@ class BacktrackingSearch():
 
         # BEGIN_YOUR_ANSWER (our solution is 19 lines of code, but don't worry if you deviate from this)
         queue = [var]
-        while len(queue) > 0:
+        while queue:
             var1 = queue.pop(0)
-            if self.csp.unaryFactors[var1]:
-                self.domains[var1] = [val for val in self.domains[var1] if self.csp.unaryFactors[var1][val] > 0]
-            
             for var2 in self.csp.get_neighbor_vars(var1):
-                factor = self.csp.binaryFactors[var1][var2]
-                if factor:
-                    new_domain = []
-                    for val2 in self.domains[var2]:
-                        if len([val1 for val1 in self.domains[var1] if factor[val1][val2] > 0]) > 0:
+                unaryFactor = self.csp.unaryFactors[var2]
+                binaryFactor = self.csp.binaryFactors[var1][var2]
+                new_domain = []
+
+                for val2 in self.domains[var2]:
+                    if unaryFactor and unaryFactor[val2] > 0:
+                        new_domain.append(val2)
+                        continue
+
+                    for val1 in self.domains[var1]:
+                        if binaryFactor and binaryFactor[val1][val2] > 0:
                             new_domain.append(val2)
-                            
-                    if new_domain != self.domains[var2]:
-                        self.domains[var2] = new_domain
-                        if var2 not in queue:
-                            queue.append(var2)
+                            break
+                
+                if self.domains[var2] != new_domain:
+                    self.domains[var2] = new_domain
+                    queue.append(var2)
         # END_YOUR_ANSWER
 
 
