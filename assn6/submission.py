@@ -367,8 +367,8 @@ def create_lightbulb_csp(buttonSets, numButtons):
     # Problem 2b
     # BEGIN_YOUR_ANSWER (our solution is 15 lines of code, but don't worry if you deviate from this)
     def get_xor_variable(csp, name, variables):
-        domain = [True, False]
         result = ('xor', name, 'aggregated')
+        domain = [True, False]
         csp.add_variable(result, domain)
 
         if len(variables) == 0:
