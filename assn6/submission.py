@@ -364,6 +364,34 @@ def create_lightbulb_csp(buttonSets, numButtons):
 
     # Problem 2b
     # BEGIN_YOUR_ANSWER (our solution is 15 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    def get_xor_variable(csp, name, variables):
+        domain = [True, False]
+        result = ('xor', name, 'aggregated')
+        csp.add_variable(result, domain)
+
+        if len(variables) == 0:
+            csp.add_unary_factor(result, lambda val: val == False)
+            return result
+
+        for i, X_i in enumerate(variables):
+            A_i = ('xor', name, i)
+            csp.add_variable(A_i, [(x, y) for x in domain for y in domain])
+
+            csp.add_binary_factor(X_i, A_i, lambda val, b: b[1] == b[0] ^ val)
+
+            if i == 0: csp.add_unary_factor(A_i, lambda b: b[0] == False)
+            else: csp.add_binary_factor(('xor', name, i - 1), A_i, lambda b1, b2: b1[1] == b2[0])
+
+        csp.add_binary_factor(A_i, result, lambda b, res: res == b[1])
+        return result
+
+    for i in range(numButtons):
+        csp.add_variable(('button', i), [True, False])
+    
+    for i, buttonSet in enumerate(buttonSets):
+        name = ('bulb', i)
+        variables = [('button', buttonIndex) for buttonIndex in buttonSet]
+        result = get_xor_variable(csp, name, variables)
+        csp.add_unary_factor(result, lambda xor: xor == True)
     # END_YOUR_ANSWER
     return csp
