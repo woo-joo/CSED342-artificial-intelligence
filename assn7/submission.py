@@ -223,7 +223,16 @@ class ParticleFilter(object):
     ############################################################
     def observe(self, agentX, agentY, observedDist):
         # BEGIN_YOUR_ANSWER (our solution is 12 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        oldParticles = self.particles
+        for particle in oldParticles:
+            dist = ((agentX - util.colToX(particle[1])) ** 2 + (agentY - util.rowToY(particle[0])) ** 2) ** 0.5
+            probDensity = util.pdf(dist, Const.SONAR_STD, observedDist)
+            oldParticles[particle] *= probDensity
+        
+        self.particles = collections.defaultdict(int)
+        for _ in range(self.NUM_PARTICLES):
+            sample = util.weightedRandomChoice(oldParticles)
+            self.particles[sample] += 1
         # END_YOUR_ANSWER
         self.updateBelief()
     
