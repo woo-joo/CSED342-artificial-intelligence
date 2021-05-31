@@ -131,7 +131,12 @@ class ExactInference(object):
     def elapseTime(self):
         if self.skipElapse: return ### ONLY FOR THE GRADER TO USE IN Problem 2
         # BEGIN_YOUR_ANSWER (our solution is 8 lines of code, but don't worry if you deviate from this)
-        raise NotImplementedError  # remove this line before writing code
+        newBelief = util.Belief(self.belief.getNumRows(), self.belief.getNumCols(), 0)
+        for (oldTile, newTile), transProb in self.transProb.items():
+            oldProb = self.belief.getProb(oldTile[0], oldTile[1])
+            newBelief.addProb(newTile[0], newTile[1], oldProb * transProb)
+        newBelief.normalize()
+        self.belief = newBelief
         # END_YOUR_ANSWER
       
     # Function: Get Belief
