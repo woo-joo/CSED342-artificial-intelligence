@@ -44,7 +44,14 @@ def get_conditional_prob2(delta, epsilon, eta, c2, d2, d3):
     """
     # Problem 1b
     # BEGIN_YOUR_ANSWER (our solution is 17 lines of code, but don't worry if you deviate from this)
-    raise NotImplementedError  # remove this line before writing code
+    p_start = lambda x: 1 - delta if x else delta
+    p_transition = lambda x, y: 1 - epsilon if x == y else epsilon
+    p_emission = lambda x, y: 1 - eta if x == y else eta
+
+    p = {c2: sum(p_start(c1) * p_transition(c2, c1) * p_transition(c3, c2) * p_emission(d2, c2) * p_emission(d3, c3)
+                 for c1 in [0, 1] for c3 in [0, 1])
+         for c2 in [0, 1]}
+    return p[c2] / (p[c2] + p[not c2])
     # END_YOUR_ANSWER
 
 # Problem 1c
