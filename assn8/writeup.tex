@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage{fullpage,enumitem,amsmath,amssymb,graphicx}
+\usepackage{multirow}
 
 \begin{document}
 
@@ -7,8 +8,8 @@
 {\Large CSED342 Spring 2021 Homework 8 \vspace{10pt}}
 
 \begin{tabular}{rl}
-Student ID: & [your student ID] \\
-Name: & [your first and last name] \\
+Student ID: & 20180948 \\
+Name: & WooJoo Kim \\
 \end{tabular}
 \end{center}
 
@@ -17,10 +18,23 @@ By turning in this assignment, I agree by the POSTECH honor code and declare tha
 \section*{Problem 2}
 
 \begin{enumerate}[label=(\alph*)]
-  \item (your solution)
+    \item
+    \begin{tabular}{lr}
+    \multirow{2}{*}{$\lnot (A \lor B) \lor C$}                 & by rule $Eliminate \ \to$ \\
+                                                               & with $(A \lor B) \to C$ \\
+    \multirow{2}{*}{$(\lnot A \land \lnot B) \lor C$}          & by rule $Move \ \lnot \ inwards$ \\
+                                                               & with $(A \lor B) \lor C$ \\
+    \multirow{2}{*}{$(\lnot A \lor C) \land (\lnot B \lor C)$} & by rule $Distribute \ \lor \ over \ \land$ \\
+                                                               & with $(\lnot A \land \lnot B) \lor C$ \\
+    \multirow{2}{*}{$\lnot A \lor C,\ \lnot B \lor C$}         & by Modus Ponens inference rule \\
+                                                               & with $(\lnot A \lor C) \land (\lnot B \lor C)$ \\
+    \multirow{2}{*}{$A \to C$}                                 & by rule $Introduce \ \to$ \\
+                                                               & with $\lnot A \lor C$ \\
+    \multirow{2}{*}{$C$}                                       & by Modus Ponens inference rule \\
+                                                               & with $A \to C$ and $A$
+    \end{tabular}
 
 
 \end{enumerate}
 
 \end{document}
-
